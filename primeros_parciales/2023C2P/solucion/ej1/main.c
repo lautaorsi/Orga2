@@ -84,7 +84,8 @@ int main (void){
   listAddLast(list,&p9);
   listAddLast(list,&p10);
   
-  // Acá pueden probar su código
+  char *nombre = "susan";
+  assert(2 == contar_pagos_aprobados_asm(list, nombre));
 
 
 	return 0;    
