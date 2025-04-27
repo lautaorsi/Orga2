@@ -80,7 +80,13 @@ strClone:
 	;prologo
 	push rbp
 	mov rbp, rsp
+
+	;como voy a usar rbx que es nv, guardo su contenido (alineado pues 16 bytes)
+	push rbx
+
+	;guardo rdi como es volatil para recuperar puntero post call strLen (alineado pues 16 bytes)
 	push rdi
+	
 	
 	xor rax, rax
 
@@ -88,43 +94,41 @@ strClone:
 	call strLen
 
 	;recupero puntero a ppio de la palabra original
-	pop r8
+	pop rbx
 
 	;guardo longitud en rdi para pedir espacio + 1 para caracter final
 	mov rdi, rax
-	add rdi, 1
+	mov rdi, 1
+
 
 	call malloc 
+
+
 
 	;guardo puntero a espacio liberado en r9
 	mov r9, rax
 
 
 	loop1:
-		;si recorri toda la palabra freno
-		cmp byte[r8], 0
-		je fin
-
 		;me guardo la letra a la que apunta el puntero original
-		movzx r10, byte [r8]
+		movzx r10, byte [rbx]
 
 		;pongo la letra en la posicion apuntada por el puntero
 		mov byte [r9], r10b
 		
-
+		;si la letra guardada era el \0, freno
+		cmp r10b, 0
+		je fin4
 
 		;actualizo las posiciones en ambas
 		add r9, 1
-		add r8, 1
+		add rbx, 1
 		jmp loop1
 
+	fin4:
 	
-	;si la recorri toda le agrego un "\0"
-	add r9, 1
-	mov byte[r9], 0
-
 	;epilogo
-	pop rdi
+	pop rbx
 	pop rbp
 	ret
 

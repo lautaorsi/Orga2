@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<!-- saved from url=(0040)https://macapiaggio.github.io/gdb-guide/ -->
+<html lang="en-US"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Machete de GDB | macapiaggio</title>
+<meta name="generator" content="Jekyll v3.10.0">
+<meta property="og:title" content="Machete de GDB">
+<meta property="og:locale" content="en_US">
+<link rel="canonical" href="https://macapiaggio.github.io/gdb-guide/">
+<meta property="og:url" content="https://macapiaggio.github.io/gdb-guide/">
+<meta property="og:site_name" content="macapiaggio">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<meta property="twitter:title" content="Machete de GDB">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","headline":"Machete de GDB","url":"https://macapiaggio.github.io/gdb-guide/"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <style class="anchorjs"></style><link rel="stylesheet" href="./GDBcheatsheet_files/style.css">
+    <!-- start custom head snippets, customize with your own _includes/head-custom.html file -->
+
+<!-- Setup Google Analytics -->
+
+
+
+<!-- You can set your favicon here -->
+<!-- link rel="shortcut icon" type="image/x-icon" href="/favicon.ico" -->
+
+<!-- end custom head snippets -->
+
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      <h1 id="machete-de-gdb">Machete de GDB</h1>
+<ul>
+  <li><a href="https://macapiaggio.github.io/gdb-guide/#machete-de-gdb">Machete de GDB</a>
+    <ul>
+      <li><a href="https://macapiaggio.github.io/gdb-guide/#antes-de-llamar-a-gdb">Antes de llamar a GDB</a></li>
+      <li><a href="https://macapiaggio.github.io/gdb-guide/#llamando-a-gdb">Llamando a GDB</a></li>
+      <li><a href="https://macapiaggio.github.io/gdb-guide/#configurando-breakpoints">Configurando breakpoints</a></li>
+      <li><a href="https://macapiaggio.github.io/gdb-guide/#iniciando-la-ejecuci%C3%B3n-del-c%C3%B3digo">Iniciando la ejecución del código</a>
+        <ul>
+          <li><a href="https://macapiaggio.github.io/gdb-guide/#imprimiendo-valores-de-registrosmemoria">Imprimiendo valores de registros/memoria</a>
+            <ul>
+              <li><a href="https://macapiaggio.github.io/gdb-guide/#ejemplo-de-salida-de-print-xmm">Ejemplo de salida de <code class="language-plaintext highlighter-rouge">print $xmm</code></a></li>
+            </ul>
+          </li>
+          <li><a href="https://macapiaggio.github.io/gdb-guide/#revisando-el-estado-del-programa">Revisando el estado del programa</a></li>
+        </ul>
+      </li>
+      <li><a href="https://macapiaggio.github.io/gdb-guide/#casteos-y-prints-con-formato">Casteos y prints con formato</a></li>
+      <li><a href="https://macapiaggio.github.io/gdb-guide/#terminando-o-reiniciando-la-ejecuci%C3%B3n">Terminando o reiniciando la ejecución</a></li>
+      <li><a href="https://macapiaggio.github.io/gdb-guide/#manejo-de-breakpoints">Manejo de breakpoints</a></li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="antes-de-llamar-a-gdb">Antes de llamar a GDB<a class="anchorjs-link " href="https://macapiaggio.github.io/gdb-guide/#antes-de-llamar-a-gdb" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Paso 0: se recomienda FUERTEMENTE utilizar gdb-dashboard. “Instalarlo” no es más que correr el comando</p>
+
+<p><code class="language-plaintext highlighter-rouge">wget -P ~ https://git.io/.gdbinit</code></p>
+
+<p>desde la terminal. No requiere sudo ni ningún permiso especial, así que se puede instalar en las compus de los labos sin problemas (lo único que hace es descargar un archivo llamado “.gdbinit” y ponerlo en el home).</p>
+
+<p>Una vez que se compiló el programa <strong>USANDO LA FLAG -g en nasm</strong> (para incluir debug symbols), podemos debuggearlo.</p>
+
+<h2 id="llamando-a-gdb">Llamando a GDB<a class="anchorjs-link " href="https://macapiaggio.github.io/gdb-guide/#llamando-a-gdb" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p>Supongamos que tengo los archivos asm.asm, c.c y el programa compilado (binario), llamemoslo ejec</p>
+
+<p>(Mi archivo asm tiene la función (símbolo global) holaMundo:, Y creé dentro de ella la etiqueta .debug: para debuggear parte del código (util para ir rápido en el gdb.))</p>
+
+<ul>
+  <li>Para ejecutar el programa de debuggeo, en la carpeta donde esta el binario llamo
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">gdb ejec</code></li>
+      <li><code class="language-plaintext highlighter-rouge">gdb</code> solo, y luego <code class="language-plaintext highlighter-rouge">file ejec</code></li>
+      <li><code class="language-plaintext highlighter-rouge">gdb --args ejec temperature -i c facil.bmp</code> para llamar un binario con argumentos, por ejemplo acá llamo al binario ejec con varios argumentos.</li>
+    </ul>
+  </li>
+  <li>Por defecto GDB usa sintaxis de <code class="language-plaintext highlighter-rouge">att</code> al imprimir lineas desensambladas.
+Como usamos gdb-dashboard, que imprime el assembly de la línea actual arriba de todo, nos gustaría que ese assembly use sintaxis de intel. 
+Para configurar esto podemos usar el comando <code class="language-plaintext highlighter-rouge">set disassembly-flavor intel</code> al comienzo de nuestra sesión.</li>
+  <li>Para comenzar a debuggear debemos configurar algún breakpoint (si no se ejecutará el programa sin parar) y luego comenzar a correrlo.</li>
+</ul>
+
+<h2 id="configurando-breakpoints">Configurando breakpoints<a class="anchorjs-link " href="https://macapiaggio.github.io/gdb-guide/#configurando-breakpoints" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<ul>
+  <li>Podemos crear breakpoints en cualquier momento (más detalle en la sección <a href="https://macapiaggio.github.io/gdb-guide/#manejo-de-breakpoints">Manejo de breakpoints</a>). Algunas formas de hacerlo son:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">b asm.asm:20</code>       // Agrega breakpoint en linea 20 de asm.asm (a veces anda medio raro)</li>
+      <li><code class="language-plaintext highlighter-rouge">$b c.c:30</code>          // Agrega breakpoint en linea 30 de c.c</li>
+      <li><code class="language-plaintext highlighter-rouge">b holaMundo.debug</code>  // Agrega breakpoint donde está .debug (el que me funciona mejor para asm)</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="iniciando-la-ejecución-del-código">Iniciando la ejecución del código<a class="anchorjs-link " href="https://macapiaggio.github.io/gdb-guide/#iniciando-la-ejecuci%C3%B3n-del-c%C3%B3digo" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p>1) <code class="language-plaintext highlighter-rouge">run</code> o <code class="language-plaintext highlighter-rouge">r</code> iniciará la ejecución del programa (o la reiniciará desde el principio, si ya se está ejecutando) y…
+2) Nos llevará al primer breakpoint, donde podemos hacer
+    * <code class="language-plaintext highlighter-rouge">info registers</code>     // O cualquiera de sus variantes (reg, r,… ver help info)
+    * <code class="language-plaintext highlighter-rouge">continue</code> o <code class="language-plaintext highlighter-rouge">c</code>
+    * <code class="language-plaintext highlighter-rouge">n</code> (next, avanza de a una linea del fuente)
+    * <code class="language-plaintext highlighter-rouge">ni</code> (next instruction, avanza una linea del assemble) o <code class="language-plaintext highlighter-rouge">si</code> (step instruction)
+    * Imprimir información del contexto de ejecución: registros, memoria, el estado del programa…</p>
+
+<h3 id="imprimiendo-valores-de-registrosmemoria">Imprimiendo valores de registros/memoria<a class="anchorjs-link " href="https://macapiaggio.github.io/gdb-guide/#imprimiendo-valores-de-registrosmemoria" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">p $RXX</code> (o print, imprimir valor de un registro, variable, expresión)
+    <ul>
+      <li>Podemos castear el tipo del registro, y entonces nos lo imprime con el formato correcto. Ejemplos:
+        <ul>
+          <li><code class="language-plaintext highlighter-rouge">p (char*) $RXX</code> imprime “Susan” por ejemplo, si $RXX es el comienzo de una string</li>
+          <li><code class="language-plaintext highlighter-rouge">p *(struct_t*) $RXX</code> imprime todos los campos de un struct de manera ordenada, si $RXX es un puntero a dicho struct (vemos que desreferencié el puntero). Sumamente util para debuggear movimientos por estructuras.</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+  <li>Si tenemos variables declaradas por nombre (por ejemplo al debuggear código c) se pueden imprimir. Por ejemplo si tengo una variable var <code class="language-plaintext highlighter-rouge">p var</code> imprime su valor. gdb ya sabe su tipo dado que c es fuertemente tipado.</li>
+  <li><code class="language-plaintext highlighter-rouge">print $xmm#</code> permite imprimir registros XMM, pero hacerlo así tira todas las posibles interpretaciones (float, int, etc.) de los datos del registro (ver ejemplo de output del comando mas adelante). Si sabemos que los datos en xmm0 son 4 floats, por ejemplo, nos conviene llamar directamente <code class="language-plaintext highlighter-rouge">print $xmm0.v4_float</code> (los nombres de los formatos aparecen al hacer print $xmm#). Listo los nombres de formatos:
+    <ul>
+      <li>v4_float (4 floats)</li>
+      <li>v2_double (2 doubles)</li>
+      <li>v16_int8 (16 enteros de 8 bits)</li>
+      <li>v8_int16 (8 enteros de 16 bits)</li>
+      <li>v4_int32 (4 enteros de 32 bits)</li>
+      <li>v2_int64 (2 enteros de 64 bits)</li>
+      <li>uint128 (1 entero sin signo de 128 bits)
+ (basicamente lo que está pasando es que trata a $xmm como un struct con las posibles lecturas como elementos, me parece. Por eso hacemos .v4_float, estamos accediendo a uno de los elementos de ese struct. En general la sintaxis de punteros de c funciona en asm para cualquier cosa que sea una dirección de memoria! Incluyendo registros.)</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">x/1tb dir</code> (examinar 1B de memoria y expresar como entero en binario. El 1 representa cantidad de unidad, b indica byte y t indica binario. Me resulta útil para leer máscaras que declaré en .rodata o .data antes de bajarlas a registros, por ejemplo. referencia: ftp://ftp. gnu.org/old-gnu/Manuals/gdb/html_chapter/gdb_9.html#SEC56). Algunas formas útiles:
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">x/4wf dir</code> lee 4 floats a partir de la dir   (w = words(DE 4 BYTES, nuestra doubleword), f = interpreta como floats)</li>
+      <li><code class="language-plaintext highlighter-rouge">x/2gf dir</code> lee 2 doubles a partir de la dir (g = giant word (de 8 bytes, neustra quadword))</li>
+      <li><code class="language-plaintext highlighter-rouge">x/1dw dir</code> lee 1 int de 32 bits CON SIGNO (d = signed decimal)</li>
+      <li><code class="language-plaintext highlighter-rouge">x/1uw dir</code> lee 1 int de 32 bits SIN SIGNO (u = unsigned decimal)</li>
+      <li>donde dir es alguna dirección de memoria (puede ser una etiqueta o algún puntero que tengo en un registro…)</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="ejemplo-de-salida-de-print-xmm">Ejemplo de salida de <code class="language-plaintext highlighter-rouge">print $xmm</code><a class="anchorjs-link " href="https://macapiaggio.github.io/gdb-guide/#ejemplo-de-salida-de-print-xmm" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$1 = {
+  v8_bfloat16 = {[0] = -nan(0x7f), [1] = -nan(0x7f), [2] = -nan(0x7f), [3] = -nan(0x7f), [4] = -nan(0x7f), [5] = -nan(0x7f), [6] = -nan(0x7f), [7] = -nan(0x7f)},
+  v8_half = {[0] = -nan(0x3ff), [1] = -nan(0x3ff), [2] = -nan(0x3ff), [3] = -nan(0x3ff), [4] = -nan(0x3ff), [5] = -nan(0x3ff), [6] = -nan(0x3ff), [7] = -nan(0x3ff)},
+  v4_float = {[0] = -nan(0x7fffff), [1] = -nan(0x7fffff), [2] = -nan(0x7fffff), [3] = -nan(0x7fffff)},
+  v2_double = {[0] = -nan(0xfffffffffffff), [1] = -nan(0xfffffffffffff)},
+  v16_int8 = {[0] = -1 &lt;repeats 16 times&gt;},
+  v8_int16 = {[0] = -1, [1] = -1, [2] = -1, [3] = -1, [4] = -1, [5] = -1, [6] = -1, [7] = -1},
+  v4_int32 = {[0] = -1, [1] = -1, [2] = -1, [3] = -1},
+  v2_int64 = {[0] = -1, [1] = -1},
+  uint128 = 340282366920938463463374607431768211455
+}
+</code></pre></div></div>
+<h3 id="revisando-el-estado-del-programa">Revisando el estado del programa<a class="anchorjs-link " href="https://macapiaggio.github.io/gdb-guide/#revisando-el-estado-del-programa" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<p>Proveemos varios comandos extra para imprimir el estado del programa en GDB durante los talleres de system programming (pueden verlos definidos en los archivos <code class="language-plaintext highlighter-rouge">orga2.py</code> de los talleres):</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">info gdt</code>: muestra la GDT cargada actualmente
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">info gdt</code> – Muestra los descriptores presentes</li>
+      <li><code class="language-plaintext highlighter-rouge">info gdt all</code> – Muestra todos los descriptores</li>
+      <li><code class="language-plaintext highlighter-rouge">info gdt [idx]</code> – Muestra el i-ésimo descriptor</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">info idt</code>: Muestra la IDT cargada actualmente
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">info idt</code> – Muestra los descriptores presentes</li>
+      <li><code class="language-plaintext highlighter-rouge">info idt all</code> – Muestra todos los descriptores</li>
+      <li><code class="language-plaintext highlighter-rouge">info idt [idx]</code> – Muestra el i-ésimo descriptor</li>
+    </ul>
+  </li>
+  <li><code class="language-plaintext highlighter-rouge">info page</code>: Muestra información de paginación
+    <ul>
+      <li><code class="language-plaintext highlighter-rouge">info page</code> – Muestra un resumen de la configuración de paginación</li>
+      <li><code class="language-plaintext highlighter-rouge">info page directory</code> – Muestra las entradas presentes en el page directory</li>
+      <li><code class="language-plaintext highlighter-rouge">info page table [idx]</code> – Muestra las entradas presentes en la page table dada</li>
+      <li><code class="language-plaintext highlighter-rouge">info page [addr]</code> – Muestra información de paginación para la dirección virtual dada</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="casteos-y-prints-con-formato">Casteos y prints con formato<a class="anchorjs-link " href="https://macapiaggio.github.io/gdb-guide/#casteos-y-prints-con-formato" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p>Cuando tenemos una dirección de memoria (puntero) y conocemos su tipo, podemos castearlo a su tipo al hacer print para mejorar legibilidad.
+Cuando trabajamos en C las variables ya están tipadas, por lo que si me paro al final de este código:</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">lista_t</span><span class="o">*</span> <span class="n">mi_lista</span> <span class="o">=</span> <span class="n">nueva_lista</span><span class="p">();</span>
+<span class="n">head_lista</span><span class="o">-&gt;</span><span class="n">arreglo</span> <span class="o">=</span> <span class="n">array</span><span class="p">;</span>
+<span class="n">head_lista</span><span class="o">-&gt;</span><span class="n">longitud</span> <span class="o">=</span> <span class="mi">12</span><span class="p">;</span>
+<span class="n">head_lista</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="n">mi_lista</span><span class="o">-&gt;</span><span class="n">head</span> <span class="o">=</span> <span class="n">head_lista</span><span class="p">;</span>
+<span class="p">...</span>
+</code></pre></div></div>
+<p>puedo hacer lo siguiente en gdb:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">p</span> <span class="o">*</span><span class="n">mi_lista</span>
+<span class="err">$</span><span class="mi">1</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="n">head</span> <span class="o">=</span> <span class="mh">0x4066b0</span>
+<span class="p">}</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">p</span> <span class="o">*</span><span class="p">(</span><span class="n">mi_lista</span><span class="o">-&gt;</span><span class="n">head</span><span class="p">)</span>
+<span class="err">$</span><span class="mi">2</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nb">next</span> <span class="o">=</span> <span class="mh">0x0</span><span class="p">,</span>
+  <span class="n">longitud</span> <span class="o">=</span> <span class="mi">12</span><span class="p">,</span>
+  <span class="n">arreglo</span> <span class="o">=</span> <span class="mh">0x4068c0</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>Ahora, supongamos que hice lo mismo en assemblery tengo guardado en RAX el puntero a mi lista.
+Si no especificamos el tipo del puntero, vemos que asume algún tipo para el puntero (parece ser <code class="language-plaintext highlighter-rouge">uint64_t*</code>)</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">p</span><span class="o">/</span><span class="n">x</span> <span class="err">$</span><span class="n">rax</span>
+<span class="err">$</span><span class="mi">3</span> <span class="o">=</span> <span class="mh">0x406830</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">p</span><span class="o">/</span><span class="n">x</span> <span class="o">*</span><span class="err">$</span><span class="n">rax</span>
+<span class="err">$</span><span class="mi">4</span> <span class="o">=</span> <span class="mh">0x4066b0</span>
+</code></pre></div></div>
+<p>Si queremos lograr la misma salida de antes, debemos especificar el tipo:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">p</span><span class="o">/</span><span class="n">x</span> <span class="o">*</span><span class="p">(</span><span class="n">lista_t</span><span class="o">*</span><span class="p">)</span><span class="err">$</span><span class="n">rax</span>
+<span class="err">$</span><span class="mi">5</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="n">head</span> <span class="o">=</span> <span class="mh">0x4066b0</span>
+<span class="p">}</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">p</span><span class="o">/</span><span class="n">x</span> <span class="o">*</span><span class="p">((</span><span class="n">lista_t</span><span class="o">*</span><span class="p">)</span><span class="err">$</span><span class="n">rax</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">head</span>
+<span class="err">$</span><span class="mi">6</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nb">next</span> <span class="o">=</span> <span class="mh">0x0</span><span class="p">,</span>
+  <span class="n">longitud</span> <span class="o">=</span> <span class="mh">0xc</span><span class="p">,</span>
+  <span class="n">arreglo</span> <span class="o">=</span> <span class="mh">0x4068c0</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>Si quisieramos imprimir el arreglo guardado en la lista, que se declara de tipo uint32_t<em>, es interesante notar que ni siquiera en C se imprimirá todo el arreglo, ya que gdb no sabe en principio qué largo tiene (a diferencia de los strings (char</em>), los arreglos no tienen carácter de límite al final)</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">p</span> <span class="o">*</span><span class="p">(</span><span class="n">mi_lista</span><span class="o">-&gt;</span><span class="n">head</span><span class="o">-&gt;</span><span class="n">arreglo</span><span class="p">)</span>
+<span class="err">$</span><span class="mi">7</span> <span class="o">=</span> <span class="mi">0</span>
+</code></pre></div></div>
+<p>Pero gdb nos permite, a partir de un puntero tipado, especificar cuantos elementos consecutivos queremos imprimir usando la notación @NUM:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">p</span> <span class="o">*</span><span class="p">(</span><span class="n">uint32_t</span><span class="o">*</span><span class="p">)</span> <span class="n">mi_lista</span><span class="o">-&gt;</span><span class="n">head</span><span class="o">-&gt;</span><span class="n">arreglo</span><span class="o">@</span><span class="mi">10</span>
+<span class="err">$</span><span class="mi">6</span> <span class="o">=</span> <span class="p">{[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span> <span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span> <span class="p">[</span><span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span> <span class="p">[</span><span class="mi">8</span><span class="p">]</span> <span class="o">=</span> <span class="mi">8</span><span class="p">,</span> <span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="mi">9</span><span class="p">}</span>
+</code></pre></div></div>
+<p>Esto es muy útil para, por ejemplo, debuggear la pila, que es un array de uint64_t (o de uint32_t en arquitectura de 32 bits).
+Supongamos el siguiente código y nos paramos al final:</p>
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">int</span> <span class="nf">main</span> <span class="p">(</span><span class="kt">void</span><span class="p">){</span>
+  <span class="kt">char</span><span class="o">*</span> <span class="n">saludo</span> <span class="o">=</span> <span class="s">"Hola"</span><span class="p">;</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>Con gdb podemos verlas últimas N posiciones apiladas del stack, por ejemplo si quisieramos ver las últimas 3 posiciones:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;&gt;&gt;</span> <span class="n">p</span> <span class="o">*</span><span class="p">((</span><span class="n">char</span><span class="o">**</span><span class="p">)</span> <span class="err">$</span><span class="n">rsp</span><span class="p">)</span><span class="o">@</span><span class="mi">3</span>
+<span class="err">$</span><span class="mi">8</span> <span class="o">=</span> <span class="p">{[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0x1000</span> <span class="o">&lt;</span><span class="n">error</span><span class="p">:</span> <span class="n">Cannot</span> <span class="n">access</span> <span class="n">memory</span> <span class="n">at</span> <span class="n">address</span> <span class="mh">0x1000</span><span class="o">&gt;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0x555555556008</span> <span class="s">"Hola"</span><span class="p">,</span> <span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mh">0x1</span> <span class="o">&lt;</span><span class="n">error</span><span class="p">:</span> <span class="n">Cannot</span> <span class="n">access</span> <span class="n">memory</span> <span class="n">at</span> <span class="n">address</span> <span class="mh">0x1</span><span class="o">&gt;</span><span class="p">}</span>
+</code></pre></div></div>
+<p>Como lo que se encuentra en el tope de la pila y en la tercer posición no son char* no funcionara desreferenciarlos, pero podemos ver su valor en hexadecimal de todos modos.
+En el caso de la segunda posición en pila, donde quedo guardada la variable local con la string “Hola”, si se imprimirá su valor.</p>
+
+<h2 id="terminando-o-reiniciando-la-ejecución">Terminando o reiniciando la ejecución<a class="anchorjs-link " href="https://macapiaggio.github.io/gdb-guide/#terminando-o-reiniciando-la-ejecuci%C3%B3n" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<ul>
+  <li>En cualquier momento podemos salir con quit, o reiniciar la ejecución del código volviendo a correr <code class="language-plaintext highlighter-rouge">r</code> (run). También se puede hacer <code class="language-plaintext highlighter-rouge">make</code> desde dentro de gdb y volver a correr el ejecutable con <code class="language-plaintext highlighter-rouge">r</code>, y se cargará el binario nuevo. Útil para mantener los breakpoints preestablecidos luego de una corrección chica.</li>
+</ul>
+
+<h2 id="manejo-de-breakpoints">Manejo de breakpoints<a class="anchorjs-link " href="https://macapiaggio.github.io/gdb-guide/#manejo-de-breakpoints" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p>Fuente: https://www.cse.unsw.edu.au/~learn/debugging/modules/gdb_conditional_breakpoints/</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">b</code> (o <code class="language-plaintext highlighter-rouge">break</code>) por si solo solo crea un breakpoint en la línea actual.</li>
+  <li><code class="language-plaintext highlighter-rouge">b asm.asm:27</code> crea un breakpoint en la línea 27 del archivo asm.asm (podría ser en un archivo de c también).</li>
+  <li><code class="language-plaintext highlighter-rouge">b foo</code> crea un breakpoint al comienzo de la función foo</li>
+  <li><code class="language-plaintext highlighter-rouge">b foo.etiqueta_relativa</code> si usamos etiquetas con un . adelante en asm, son lo que llamo “etiquetas relativas” a la función actual (última etiqueta sin . adelante). Entonces al poner el breakpoint en gdb debemos especificar el nombre de la función y luego el nombre de la etiqueta relativa.</li>
+  <li><code class="language-plaintext highlighter-rouge">b &lt;lugar&gt; if &lt;expresion&gt;</code> donde lugar se especifica de cualquiera de las maneras mencionadas arriba, y la expresión puede ser, por ejemplo $rdi &gt; 5 o cualquier expresión booleana, en principio (se puede hacer un <code class="language-plaintext highlighter-rouge">p &lt;expresion&gt;</code> antes de setear el breakpoint para revisar que ande bien).</li>
+  <li><code class="language-plaintext highlighter-rouge">info breakpoints</code> para ver los breakpoints seteados y sus números correspondientes. Usamos los números de los breakpoints para borrarlos o ponerles condiciones:</li>
+  <li><code class="language-plaintext highlighter-rouge">delete 5</code> borra el breakpoint con número 5</li>
+  <li><code class="language-plaintext highlighter-rouge">delete</code> borra todos los breakpoints</li>
+  <li><code class="language-plaintext highlighter-rouge">condition 7 $rdi &gt; 5</code> agrega una condición al breakpoint número 7, que ahora frenará sólo si el valor de $rdi es mayor a 5</li>
+  <li><code class="language-plaintext highlighter-rouge">condition 7</code> borra las condiciones del breakpoint 7, es decir frena siempre que el código pase por ahí.</li>
+</ul>
+
+
+      
+    </div>
+    <script src="./GDBcheatsheet_files/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+  
+
+</body></html>

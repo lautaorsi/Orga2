@@ -8,8 +8,14 @@
 #include "Memoria.h"
 
 int main() {
-	char* a = "";
+	char* a = "hola";
 	char* ac = strClone(a);
-	assert(ac[0] == '\0');
+	assert(ac[0] == 'h');
+	assert(ac[01] == 'o');
+	assert(ac[02] == 'l');
+	assert(ac[03] == 'a');
+	assert(ac[04] == '/0');
+
+
 
 }
