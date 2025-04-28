@@ -81,24 +81,21 @@ strClone:
 	push rbp
 	mov rbp, rsp
 
-	;como voy a usar rbx que es nv, guardo su contenido (alineado pues 16 bytes)
 	push rbx
 
-	;guardo rdi como es volatil para recuperar puntero post call strLen (alineado pues 16 bytes)
-	push rdi
-	
+	mov rbx, rdi
 	
 	xor rax, rax
 
 	;sizeof se fija la longitud de la palabra contenida en RDI y retorna la long
 	call strLen
 
-	;recupero puntero a ppio de la palabra original
-	pop rbx
+
+	
 
 	;guardo longitud en rdi para pedir espacio + 1 para caracter final
 	mov rdi, rax
-	mov rdi, 1
+	add rdi, 1
 
 
 	call malloc 
@@ -126,6 +123,7 @@ strClone:
 		jmp loop1
 
 	fin4:
+	
 	
 	;epilogo
 	pop rbx
