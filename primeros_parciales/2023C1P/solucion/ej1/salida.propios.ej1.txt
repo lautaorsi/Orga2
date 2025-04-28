@@ -1,0 +1,61 @@
+== Ejercicio 1a ==
+
+Clásicos 0: 0
+Clásicos 1: 0
+Clásicos 2: 100
+Clásicos 3: 0
+Clásicos 4: 0
+Clásicos 5: 0
+Clásicos 6: 100
+Clásicos 7: 0
+Clásicos 8: 100
+Clásicos 9: 0
+Clásicos 10: 0
+Clásicos 11: 0
+Clásicos 12: 0
+Clásicos 13: 100
+Clásicos 14: 100
+Clásicos 15: 0
+Clásicos 16: 100
+Clásicos 17: 100
+Clásicos 18: 100
+Clásicos 19: 100
+Clásicos 20: 100
+Clásicos 21: 0
+Clásicos 22: 0
+Clásicos 23: 100
+Clásicos 24: 100
+Clásicos 25: 100
+Clásicos 26: 100
+Clásicos 27: 0
+Clásicos 28: 0
+Clásicos 29: 0
+Clásicos 30: 0
+Clásicos 31: 100
+Clásicos 32: 100
+Clásicos 33: 0
+Clásicos 34: 0
+Clásicos 35: 100
+Clásicos 36: 100
+Clásicos 37: 100
+Clásicos 38: 0
+Clásicos 39: 0
+Clásicos 40: 0
+Clásicos 41: 0
+Clásicos 42: 0
+Clásicos 43: 100
+Clásicos 44: 0
+Clásicos 45: 100
+Clásicos 46: 100
+Clásicos 47: 100
+Clásicos 48: 100
+Clásicos 49: 100
+
+== Ejercicio 1b ==
+
+Array 0:[]
+Array 1:[]
+Array 2:[]
+Array 3:[]
+Array 4:[]
+Array 5:[
