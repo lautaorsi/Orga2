@@ -12,7 +12,9 @@ int main (void){
 	unTemplo->colum_corto = 2;
 	unTemplo->colum_largo = 5;
 	size_t unaLong = 1;
-	assert(1 == cuantosTemplosClasicos(unTemplo, unaLong));
+	templo* arrTemplo = {unTemplo};
+	templo* arrClasicos = templosClasicos(unTemplo, unaLong);
+	assert(& *arrClasicos == & *arrTemplo);
 	free(unTemplo);
 
 	return 0;    

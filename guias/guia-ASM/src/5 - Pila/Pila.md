@@ -2,7 +2,7 @@ En una máquina de uno de los labos de la facultad, nos encontramos un _pendrive
 Investigando un poco vimos que se trata de un programa de prueba interno de una importante compañía de software, que sirve para probar la validez de claves para su sistema operativo.
 Si logramos descubrir la clave... bueno, sería interesante...
 Para ello llamamos por teléfono a la división de desarrollo en USA, haciéndonos pasar por Susan, la amiga de John (quien averiguamos estuvo en la ECI dando una charla sobre seguridad).
-De esa llamada averiguamos: clave_10.0.2.15
+De esa llamada averiguamos: clave_10.0.2.15/
 
 - El programador que compiló el programa olvidó sacar los símbolos de *debug* en la función que imprime el mensaje de autenticación exitosa/fallida.
   Esta función toma un único parámetro de tipo `int` llamado `miss` que utiliza para definir y imprimir un mensaje de éxito o de falla de autenticación.

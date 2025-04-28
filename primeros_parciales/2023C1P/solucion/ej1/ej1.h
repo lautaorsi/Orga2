@@ -34,4 +34,6 @@ uint32_t cuantosTemplosClasicos_c(templo *temploArr, size_t temploArr_len);
 templo* templosClasicos(templo *temploArr, size_t temploArr_len);
 templo* templosClasicos_c(templo *temploArr, size_t temploArr_len);
 
+uint8_t esTemploClasico(templo* unTemplo);
+
 #endif
