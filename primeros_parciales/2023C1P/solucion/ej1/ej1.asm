@@ -63,11 +63,11 @@ templosClasicos:
 
     ;si el array era vacio, retorno la direcc sin mas
     cmp rsi, 0
-    je fin1
+    je fin
 
 
     ;recordemos que rdi tiene la direccion del primer elemento del arreglo templos (24 bytes de long cada uno)
-    loop1:
+.loop:
 
         ;me guardo el primer elem del array en r10, me fijo si es clasico
         mov r10, qword[rdi]
@@ -92,16 +92,16 @@ templosClasicos:
         sub rsi, 1
         ;si ya recorri el array termino
         cmp rsi, 0
-        je fin1
+        je fin
 
         no_agregar:
         add r9, 24
         add rdi, 24
 
-        jmp loop1
+        jmp loop
         
 
-    fin1:
+.fin:
         pop rbp
         ret
         
@@ -118,9 +118,9 @@ esTemploClasico:
     add r9b, 1
 
     cmp r8b, r9b
-    jne fin2
+    jne fin
     add rax, 1
-    fin2:
+.fin:
         ret
 
 
@@ -139,7 +139,7 @@ cuantosTemplosClasicos:
     and rax, 0
 
 
-    loop3:
+.loop:
         ;guardo en r8 largo y en r9 corto
         mov r8b, byte [rdi]
         mov r9b, byte [rdi + 16]
