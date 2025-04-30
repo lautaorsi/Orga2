@@ -11,7 +11,7 @@ int main (void){
   list_t* list=listNew();
   
   pago_t p1;
-  p1.monto=1;
+  p1.monto=75;
   p1.cobrador="susan";
   p1.pagador="bob";
   p1.aprobado=0;
@@ -87,6 +87,7 @@ int main (void){
   char *nombre = "susan";
   assert(2 == contar_pagos_aprobados_asm(list, nombre));
 
+  
 
 	return 0;    
 }

@@ -16,37 +16,54 @@ extern strcmp
 ; rdi -> direccion de la lista
 ; rsi -> direccion del principio del nombre de usuario
 contar_pagos_aprobados_asm:
-    ;prologo, preservo rdi
+    ;prologo
     push rbp
     mov rbp, rsp
-    push rdi 
+    push rbx
+    push r15
+    push r14
+    push r13
 
-    xor r10,r10
+    xor r13, r13 ;limpio r13 para usarlo como contador
 
-    ;muevo a rdx la lista (8 bytes -> direcc firstElem
-    ;                   8 bytes -> direcc lastElem)
-    mov rdx, [rdi]
+    ;en rbx guardo el s_list
+    mov rbx, qword [rdi]
 
-    ;la lista en si no importa, accedo al primer nodo de la lista
-    mov rdx, qword [rdx]
+    ;ahora en r15 guardo el primer elem de la lista
+    mov r15, qword[rbx]
 
-    loop:
-        ;si la direcc es null termino
-        cmp rdx, 0
-        je fin
-
-        ;el nodo tiene en los primeros 8 bytes la direcc de pago_t, guardo pago_t en rcx
-        mov rcx, qword [rdx]
-
-        ;el ppio del nombre esta 8 bytes adelante (2 bytes de contenido + 6 de padding)
-        mov rdi, qword [rcx + 8]
-
-        mov rax,[rdi]
+.loop:
+        mov r14, qword r15 ;en r14 guardo la direcc al pago_t del nodo
+        add r14, 16
+        mov rdi, qword [r14] ;uso el offset para acceder a la direccion al str
 
         call strcmp
 
-    fin:
+        cmp rax, 0
+        jne .no_sumar
+        add r13, 1
+
+.no_sumar:
+        ;cargo la direccion al proximo nodo en r15
+        mov r15, [r15 + 8]
+        ;si la direcc es null termina
+        cmp r15, 0
+        je .terminar
+        ;si no, loopeamos
+        jmp .loop
+.terminar:
+        pop r13
+        pop r14
+        pop r15
+        pop rbx
+        pop rbp
         ret
+
+
+
+
+
+    
 
     
 
