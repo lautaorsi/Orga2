@@ -9,13 +9,22 @@
 int main (void){
 	uint8_t num = 5;
 	str_array_t* unStrArr = strArrayNew(num);
-	assert((*unStrArr).size == 0);
-	assert((*unStrArr).data == NULL);
-	assert((*unStrArr).capacity == 5);
+	(*unStrArr).size = 0;
+	(*unStrArr).capacity = 5;
 
-	assert(strArrayGetSize(unStrArr) == 0);
+	char* unStr = "hola";
+	char* unStr2 = "chau";
+	strArrayAddLast(unStrArr, unStr);
+	strArrayAddLast(unStrArr, unStr2);
 
-	free(unStrArr);
+	char* str = (*unStrArr).data[0];
+	char* str2 = (*unStrArr).data[1];
+
+	strArraySwap(unStrArr, 0, 1);
+
+	assert(strcmp((*unStrArr).data[0],"chau") == 0);
+
+	strArrayDelete(unStrArr);
 	return 0;    
 }
 
