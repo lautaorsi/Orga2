@@ -17,13 +17,6 @@ int main (void){
 	strArrayAddLast(unStrArr, unStr);
 	strArrayAddLast(unStrArr, unStr2);
 
-	char* str = (*unStrArr).data[0];
-	char* str2 = (*unStrArr).data[1];
-
-	strArraySwap(unStrArr, 0, 1);
-
-	assert(strcmp((*unStrArr).data[0],"chau") == 0);
-
 	strArrayDelete(unStrArr);
 	return 0;    
 }

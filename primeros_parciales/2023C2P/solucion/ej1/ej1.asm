@@ -14,44 +14,50 @@ extern strcmp
 
 ; uint8_t contar_pagos_aprobados_asm(list_t* pList, char* usuario);
 ; rdi -> direccion de la lista
-; rsi -> direccion del principio del nombre de usuario
+; rsi -> direccion del string usuario
 contar_pagos_aprobados_asm:
-    ;prologo
-    push rbp
-    mov rbp, rsp
-    push rbx
-    push r15
-    push r14
-    push r13
+        ;prologo
+        push rbp
+        mov rbp, rsp
+        push rbx
+        push r15
+        push r14
+        push r13
 
-    xor r13, r13 ;limpio r13 para usarlo como contador
+        and r14, 0 ;uso r14 de contador
 
-    ;en rbx guardo el s_list
-    mov rbx, qword [rdi]
+        mov rbx, [rdi] ;entro a la direccion de la lista, en los primeros 8 bytes tengo la direccion de listelem
 
-    ;ahora en r15 guardo el primer elem de la lista
-    mov r15, qword[rbx]
+        cmp rbx, 0 ;si no tiene elems la lista termino aca
+        je .fin
 
-.loop:
-        mov r14, qword r15 ;en r14 guardo la direcc al pago_t del nodo
-        add r14, 16
-        mov rdi, qword [r14] ;uso el offset para acceder a la direccion al str
+        
+        mov r15, rsi ;guardo nombre para no perderlo
+        
 
-        call strcmp
+        .loop:
+        mov r13, [rbx] ;accedo a direccion de pago_t
+        mov rdi, [r13 + 16] ;cargo en rdi el nombre del cobrador
+        mov rsi, r15 ;cargo en rsi el nombre a contar
+        
+        call strcmp ;en rdi tengo nombre de cobrador y en rsi nombre de usuario a comparar
 
         cmp rax, 0
         jne .no_sumar
-        add r13, 1
 
-.no_sumar:
-        ;cargo la direccion al proximo nodo en r15
-        mov r15, [r15 + 8]
-        ;si la direcc es null termina
-        cmp r15, 0
-        je .terminar
-        ;si no, loopeamos
+        movzx rdi, byte [r13 + 1] ;agarro aprobado
+        cmp rdi, 1
+        jne .no_sumar
+        add r14, 1
+
+        .no_sumar:
+        mov rbx, [rbx + 8] ;me muevo a siguiente listelem
+        cmp rbx, 0 ;si es null termino
+        je .fin
         jmp .loop
-.terminar:
+        
+        .fin:
+        mov rax, r14
         pop r13
         pop r14
         pop r15
@@ -75,6 +81,55 @@ contar_pagos_aprobados_asm:
 
 ; uint8_t contar_pagos_rechazados_asm(list_t* pList, char* usuario);
 contar_pagos_rechazados_asm:
+        ;prologo
+        push rbp
+        mov rbp, rsp
+        push rbx
+        push r15
+        push r14
+        push r13
+
+        and r14, 0 ;uso r14 de contador
+
+        mov rbx, [rdi] ;entro a la direccion de la lista, en los primeros 8 bytes tengo la direccion de listelem
+
+        cmp rbx, 0 ;si no tiene elems la lista termino aca
+        je .fin
+
+        
+        mov r15, rsi ;guardo nombre para no perderlo
+        
+
+        .loop:
+        mov r13, [rbx] ;accedo a direccion de pago_t
+        mov rdi, [r13 + 16] ;cargo en rdi el nombre del cobrador
+        mov rsi, r15 ;cargo en rsi el nombre a contar
+        
+        call strcmp ;en rdi tengo nombre de cobrador y en rsi nombre de usuario a comparar
+
+        cmp rax, 0
+        jne .no_sumar
+
+        movzx rdi, byte [r13 + 1] ;agarro aprobado
+        cmp rdi, 0
+        jne .no_sumar
+        add r14, 1
+
+        .no_sumar:
+        mov rbx, [rbx + 8] ;me muevo a siguiente listelem
+        cmp rbx, 0 ;si es null termino
+        je .fin
+        jmp .loop
+        
+        .fin:
+        mov rax, r14
+        pop r13
+        pop r14
+        pop r15
+        pop rbx
+        pop rbp
+        ret
+
 
 ; pagoSplitted_t* split_pagos_usuario_asm(list_t* pList, char* usuario);
 split_pagos_usuario_asm:

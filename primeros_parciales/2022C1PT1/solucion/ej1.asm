@@ -91,19 +91,16 @@ strArrayAddLast:
     mov rbp, rsp
     push rbx
     push r15
+    push r14
 
     movzx rbx, byte [rdi + 1] ;agarro la capacidad
     movzx r8, byte [rdi]
     cmp rbx, r8 ;si es igual al tamano no hago nada
     je .fin
 
-
-
     mov r8, [rdi] ;caso contrario incremento el tamano
     inc r8
     mov [rdi], r8
-
-
 
     ;agarro data (char**, lista de strings)
     mov r15, qword [rdi + 8]
@@ -117,11 +114,15 @@ strArrayAddLast:
     jmp .buscar_null
 
 .guardar_palabra:
-    mov [r15], rsi
+    mov rdi, rsi
+
+    call strClone
+
+    mov [r15], rax
+
     je .fin
-
-
 .fin:
+    pop r14
     pop r15
     pop rbx
     pop rbp
@@ -197,21 +198,36 @@ strArrayDelete:
     push rbp
     mov rbp, rsp
 
+
     ;guardo puntero al struct pq voy a llamar a free y rdi es volatil
     push rdi
-    sub rsp, 8 ;alineada
-
-   
-    mov rdi, [rdi + 8] ;pongo en rdi el puntero al array de strings
-
-    call free ;libero el array
     
-    ;recupero el puntero al struct
-    add rsp, 8
-    pop rdi
+    mov rdi, [rdi + 8]  ;pongo en rdi el puntero al array de strings
     
-    ;libero puntero a struct
-    call free
+    push rdi    ;pusheo principio de array
+
+    mov rsi, [rdi]  
+    cmp rsi, 0 
+    je .borrar_estructura   ;si el primer string es null borro estructura
+    
+    .loop:
+        mov rsi, rdi ;me guardo puntero a lista
+        mov rdi, [rdi] ;accedo a puntero de string
+        call free ;borro string
+        add rsi, 8
+        mov rdi, rsi ;recupero puntero a lista pero + 8 (voy a siguiente palabra)
+        cmp qword [rdi], 0 ;si la palabra es null borro estructura 
+        je .borrar_estructura
+        jmp .loop
+        
+    .borrar_estructura:
+
+    pop rdi ;recupero principio de array
+    call free   ;libero array
+
+ 
+    pop rdi ;recupero principio de struct
+    call free ;libero struct
 
     pop rbp
     ret

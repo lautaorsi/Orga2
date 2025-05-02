@@ -87,6 +87,7 @@ int main (void){
   char *nombre = "susan";
   assert(2 == contar_pagos_aprobados_asm(list, nombre));
 
+  listDelete(list);
   
 
 	return 0;    
