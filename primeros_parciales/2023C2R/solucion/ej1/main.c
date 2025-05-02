@@ -53,7 +53,7 @@ void test_list_concat()
 */
 void run_tests(){
 
-	/* Aqui pueden comenzar a probar su codigo */
+	/* Aqui pueden comenzar a probar su codigo. */
 	test_create_destroy_list();
 
 	test_create_destroy_node();
