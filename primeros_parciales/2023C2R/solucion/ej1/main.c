@@ -39,11 +39,11 @@ void test_create_list_add_nodes()
 
 void test_list_concat()
 {
-	string_proc_list * list	= string_proc_list_create();
-	string_proc_list_add_node(list, 0, "hola");
-	string_proc_list_add_node(list, 0, "a");
-	string_proc_list_add_node(list, 0, "todos!");	
-	char* new_hash = string_proc_list_concat(list, 0, "hash");
+	string_proc_list * list	= string_proc_list_create_asm();
+	string_proc_list_add_node_asm(list, 0, "hola");
+	string_proc_list_add_node_asm(list, 0, "a");
+	string_proc_list_add_node_asm(list, 0, "todos!");	
+	char* new_hash = string_proc_list_concat_asm(list, 0, "hash");
 	string_proc_list_destroy(list);
 	free(new_hash);
 }
