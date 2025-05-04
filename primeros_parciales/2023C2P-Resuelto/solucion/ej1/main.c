@@ -23,7 +23,7 @@ int main (void){
   p2.aprobado=1;
 
   pago_t p3;
-  p3.monto=10;
+  p3.monto=15;
   p3.cobrador="susan";
   p3.pagador="bob";
   p3.aprobado=1;
@@ -84,8 +84,13 @@ int main (void){
   listAddLast(list,&p9);
   listAddLast(list,&p10);
   
-  char *nombre = "susan";
-  assert(2 == contar_pagos_aprobados_asm(list, nombre));
+  char* nom = "susan";
+
+  pagoSplitted_t* splitted = split_pagos_usuario_asm(list,nom);
+
+  free(splitted->aprobados);
+  free(splitted->rechazados);
+  free(splitted);
 
   listDelete(list);
   
