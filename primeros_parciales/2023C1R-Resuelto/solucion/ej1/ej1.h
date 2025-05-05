@@ -28,3 +28,5 @@ uint8_t en_blacklist(char* comercio, char** lista_comercios, uint8_t n);
 uint8_t en_blacklist_asm(char* comercio, char** lista_comercios, uint8_t n);
 pago_t** blacklistComercios(uint8_t cantidad_pagos, pago_t* arr_pagos, char** arr_comercios, uint8_t size_comercios);
 pago_t** blacklistComercios_asm(uint8_t cantidad_pagos, pago_t* arr_pagos, char** arr_comercios, uint8_t size_comercios);
+
+uint8_t contar_pagos_blacklisteados(uint8_t cantidad_pagos, pago_t* arrPagos, char** blacklist, uint8_t long_blacklist);
